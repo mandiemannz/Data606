@@ -1,0 +1,197 @@
+---
+title: "Data 606 HW 5- Inference for Numerical Data"
+author: "Amanda Arce"
+date: "October 24, 2018"
+output:
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+---
+
+
+##Chapter 5 - Inference for Numerical Data
+
+##Graded: 5.6, 5.14, 5.20, 5.32, 5.48
+
+##5.6 Working backwards, Part II. A 90% confidence interval for a population mean is (65,
+77). The population distribution is approximately normal and the population standard deviation
+is unknown. This confidence interval is based on a simple random sample of 25 observations.
+Calculate the sample mean, the margin of error, and the sample standard deviation.
+
+
+##Sample mean
+```{r}
+n <- 25
+x1 <- 65
+x2 <- 77
+
+(x2+x1)/2
+
+```
+
+##Margin of error
+
+
+  
+```{r}
+n <- 25
+x1 <- 65
+x2 <- 77
+
+ME <-(x2-x1)/2
+
+ME
+```
+##Sample SD ME = t*
+
+```{r}
+df <- 25-1
+p <- 0.9
+p2tails <- p + (1-p)/2
+tval <- qt(p2tails, df)
+SE <- ME / tval
+sd <- SE * sqrt(n)
+
+sd
+
+```
+##5.14 SAT scores. SAT scores of students at an Ivy League college are distributed with a
+standard deviation of 250 points. Two statistics students, Raina and Luke, want to estimate the
+average SAT score of students at this college as part of a class project. They want their margin of error to be no more than 25 points.
+
+##(a) Raina wants to use a 90% confidence interval. How large a sample should she collect?
+```{R}
+Z <- 1.645
+SD <- 250
+ME <- 25
+
+N <- ((Z *SD)/ME)^ 2 
+N
+
+```
+
+
+
+##(b) Luke wants to use a 99% confidence interval. Without calculating the actual sample size,
+determine whether his sample should be larger or smaller than Raina's, and explain your
+reasoning.
+
+#His sample should be larger since it will require a higher z number.
+
+
+##(c) Calculate the minimum required sample size for Luke.
+
+```{R}
+Z <- 2.575
+SD <- 250
+ME <- 25
+
+N <- ((Z *SD)/ME)^ 2 
+N
+
+```
+
+##5.20 High School and Beyond, Part I. The National Center of Education Statistics conducted
+a survey of high school seniors, collecting test data on reading, writing, and several other subjects.
+Here we examine a simple random sample of 200 students from this survey. Side-by-side box plots
+of reading and writing scores as well as a histogram of the di???erences in scores are shown below.
+
+##(a) Is there a clear difference in the average reading and writing scores?
+
+##There does not seem to be much difference between the reading and writng scores.
+ 
+##(b) Are the reading and writing scores of each student independent of each other?
+
+#The scores are not independent.
+
+##(c) Create hypotheses appropriate for the following research question: is there an evident difference in the average scores of students in the reading and writing exam?
+
+##H0: Has no difference between the average reading and writing score.
+
+##HA: There seems to be a difference between the average reading and writing score.
+
+##(d) Check the conditions required to complete this test.
+
+##Independence and normal distribution. The data is of a pair set.. which means they are not independent. So the data is reasonably normal.
+
+##(e) The average observed difference in scores is ¯xread???write = ???0.545, and the standard deviation of the differences is 8.887 points. Do these data provide convincing evidence of a difference between the average scores on the two exams?
+
+```{R}
+sd <- 8.887
+m <- -0.545
+n <- 200
+df <-  n-1
+
+se <- sd / sqrt(n)
+t <-  m -0/se
+
+p <- 2*pt(t, df)
+
+
+
+```
+##Here the p-value is no less than 0.05, therefore, there is not enought evidence of a difference in the reading and writing scores.
+
+##(f) What type of error might we have made? Explain what the error means in the context of the
+application.
+
+##T I error: Incorrectly reject the null hypothesis.
+
+##T II error: Incorrectly reject the alternative hypothesis.
+
+##Could have possibly made a type II error by rejecting the alternative hypothesis HA.
+
+
+##(g) Based on the results of this hypothesis test, would you expect a confidence interval for the average di???erence between the reading and writing scores to include 0? Explain your reasoning.
+
+##Yes, I would expect a confidence interval for the average difference between reading and writing scores to include 0.
+
+
+##5.32 Fuel efficiency of manual and automatic cars, Part I. Each year the US Environmental
+Protection Agency (EPA) releases fuel economy data on cars manufactured in that year.
+Below are summary statistics on fuel efficiency (in miles/gallon) from random samples of cars with manual and automatic transmissions manufactured in 2012. Do these data provide strong evidence of a difference between the average fuel efficiency of cars with manual and automatic transmissions in terms of their average city mileage? Assume that conditions for inference are satisfied
+
+```{r}
+n <- 26
+mean_a <- 16.12
+sd_a <- 3.58
+
+mean_m <- 19.85
+sd_m <- 4.51
+
+#difference
+mu_diff <- mean_a - mean_m
+
+#standard error
+SE <- ((sd_a ^ 2 / n) + (sd_m ^ 2/n) )^0.5
+
+t <- (mu_diff - 0) / SE
+df <- n - 1
+p <- pt(t, df = df)
+p
+
+
+```
+
+
+##5.48 Work hours and education. The General Social Survey collects data on demographics,
+education, and work, among many other characteristics of US residents.47 Using ANOVA, we can
+consider educational attainment levels for all 1,172 respondents at once. Below are the distributions
+of hours worked by educational attainment and relevant summary statistics that will be helpful in
+carrying out this analysis.
+
+##(a) Write hypotheses for evaluating whether the average number of hours worked varies across the five groups.
+
+##H0: The difference of all averages is equal Ha: One average is not equal to the others
+
+##(b) Check conditions and describe any assumptions you must make to proceed with the test.
+Data within each group is nearly normal.
+
+##The observations within the data are independent.
+
+##(c) Below is part of the output associated with this test. Fill in the empty cells. degree 4 2006.16 501.54 2.188984 0.0682 res 1167 267382 229.12 total 1171 269388.16
+
+
+##(d) What is the conclusion of the test?
+
+The p-value is > than 0.05, we can conclude that there is not a significant difference between the groups. Null hyp not rejected.
