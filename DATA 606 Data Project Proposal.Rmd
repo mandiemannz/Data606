@@ -1,0 +1,169 @@
+---
+title: "DATA 606 Data Project Proposal"
+author: "Amanda Arce"
+date: "October 22, 2018"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+
+---
+
+
+
+### Data Preparation
+
+```{r setup, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+# load data
+library(tidyverse)
+library(readr)
+library(psych)
+library(corrgram)
+
+```
+
+
+### Research question 
+
+**You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+What is the deathrate based off disease, race, and age
+
+### Cases 
+
+**What are the cases, and how many are there?**
+
+708 total causes - showing year, leading cause of death, ethnicity, and death/rates
+
+
+### Data collection 
+
+**Describe the method of data collection.**
+Data was gathered from NYC Open Data
+
+
+### Type of study 
+
+**What type of study is this (observational/experiment)?**
+Obervational 
+ 
+
+### Data Source 
+
+**If you collected the data, state self-collected. If not, provide a citation/link.**
+
+https://data.cityofnewyork.us/Health/New-York-City-Leading-Causes-of-Death/jb7j-dtam
+
+
+```{r}
+
+leadingCauses <- read_csv("New_York_City_Leading_Causes_of_Death.csv")
+head(leadingCauses, 10)
+```
+
+
+
+
+### Dependent Variable
+
+**What is the response variable? Is it quantitative or qualitative?**
+
+The dependent variable is Death rates.  The death rate is quantitative data.
+
+
+### Independent Variable
+
+**You should have two independent variables, one quantitative and one qualitative.**
+
+The indepedent variables are disease, race, and age.
+
+
+### Relevant summary statistics 
+
+**Provide summary statistics for each the variables. Also include appropriate visualizations related to your research question (e.g. scatter plot, boxplots, etc). This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+```{r}
+leadingCauses$Deaths[leadingCauses$Deaths=="."] <- NA
+leadingCauses$`Death Rate`[leadingCauses$`Death Rate`=="."] <- NA
+leadingCauses$`Age Adjusted Death Rate`[leadingCauses$`Age Adjusted Death Rate`=="."] <- NA
+leadingCauses <- na.omit(leadingCauses)
+
+
+leadingCauses$Deaths <- as.numeric(leadingCauses$Deaths)
+leadingCauses$`Death Rate` <- as.numeric(leadingCauses$`Death Rate`)
+leadingCauses$`Age Adjusted Death Rate` <- as.numeric(leadingCauses$`Age Adjusted Death Rate`)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+summary(leadingCauses)
+```
+
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+describe(leadingCauses)
+```
+
+```{r}
+ggplot(data = leadingCauses, aes(leadingCauses$Year, leadingCauses$Deaths)) + 
+  stat_summary(fun.y = sum,
+               geom = "bar", aes(fill = Year))
+```
+
+```{r}
+ggplot(data = leadingCauses, aes(leadingCauses$`Race Ethnicity`, leadingCauses$Deaths)) + 
+  stat_summary(fun.y = sum,
+               geom = "bar", aes(fill = `Race Ethnicity`))
+```
+
+```{r}
+leadingCauses %>%
+  group_by(leadingCauses$`Race Ethnicity`) %>%
+  summarize(mean = mean(Deaths), sd = sd(Deaths), median = median(Deaths))
+
+```
+
+
+
+```{r}
+
+ggplot(data = leadingCauses, aes(leadingCauses$`Leading Cause`, leadingCauses$Deaths)) + 
+  stat_summary(fun.y = sum,
+               geom = "bar", aes(fill = `Leading Cause`)) +
+  theme(legend.position="none")
+```
+
+
+```{r}
+nums <- unlist(lapply(leadingCauses, is.numeric)) 
+nums1 <- leadingCauses[ , nums]
+cor(nums1)
+```
+
+```{r}
+corrgram(nums1, order=TRUE, 
+         lower.panel=panel.shade,
+        upper.panel=panel.pie, 
+        text.panel=panel.txt,
+        main="Data")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Reference:https://data.cityofnewyork.us/Health/New-York-City-Leading-Causes-of-Death/jb7j-dtam
