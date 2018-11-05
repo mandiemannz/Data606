@@ -1,0 +1,205 @@
+---
+title: "HW 6"
+author: "Amanda Arce"
+date: "November 1, 2018"
+output: html_document
+---
+Chapter 6 - Inference for Categorical Data
+
+Graded: 6.6, 6.12, 6.20, 6.28, 6.44, 6.48
+
+6.6 2010 Healthcare Law. On June 28, 2012 the U.S. Supreme Court upheld the much debated 2010 healthcare law, declaring it constitutional. A Gallup poll released the day after this decision indicates that 46% of 1,012 Americans agree with this decision. At a 95% con???dence level, this sample has a 3% margin of error. Based on this information, determine if the following statements are true or false, and explain your reasoning.
+
+(a) We are 95% con???dent that between 43% and 49% of Americans in this sample support the decision of the U.S. Supreme Court on the 2010 healthcare law.
+
+False, we know that 46% of this sample supports the decison of the U.S. Supreme Court.
+
+(b) We are 95% con???dent that between 43% and 49% of Americans support the decision of the U.S. Supreme Court on the 2010 healthcare law. 
+True. we can an Inference about this decison 
+
+(c) If we considered many random samples of 1,012 Americans, and we calculated the sample proportions of those who support the decision of the U.S. Supreme Court, 95% of those sample proportions will be between 43% and 49%. 
+False, the population proportion with contain 95%
+
+(d) The margin of error at a 90% con???dence level would be higher than 3%.
+
+False. For 90% the critical value decreases.
+
+6.12 Legalization of marijuana, Part I. The 2010 General Social Survey asked 1,259 US residents: "Do you think the use of marijuana should be made legal, or not?" 48% of the respondents said it should be made legal.44
+
+
+(a) Is 48% a sample statistic or a population parameter? Explain.
+
+48% is a sample statistic and not a population parameter. The study looks at 1259 US residents out of the entire population.
+
+(b) Construct a 95% con???dence interval for the proportion of US residents who think marijuana should be made legal, and interpret it in the context of the data. 
+
+
+```{r}
+n <- 1259
+p <- 0.48
+ci <- 0.95
+z <- 1.96
+
+se <- sqrt((p*(1-p)/n))
+
+p + z * se
+
+
+p - z * se
+```
+
+(c) A critic points out that this 95% con???dence interval is only accurate if the statistic follows a normal distribution, or if the normal model is a good approximation. Is this true for these data? Explain. 
+
+Yes, The observations are independent and the sample sizeare over 10 success and 10 failures within the observations. 
+
+
+
+
+(d) A news piece on this survey's ???ndings states, "Majority of Americans think marijuana should be legalized." Based on your con???dence interval, is this news piece's statement justi???ed
+
+
+No. Our con???dence interval is between 45-50%. Somewhat 50% of americans    believe marijuana should be leaglized.
+
+
+
+6.20 Legalize Marijuana, Part II. As discussed in Exercise 6.12, the 2010 General Social Survey reported a sample where about 48% of US residents thought marijuana should be made legal. If we wanted to limit the margin of error of a 95% con???dence interval to 2%, about how many Americans would we need to survey ?
+
+```{r}
+m <- 0.02
+1.96^2*p*(1-p)/m^2
+
+```
+
+6.28 Sleep deprivation, CA vs. OR, Part I. According to a report on sleep deprivation by the Centers for Disease Control and Prevention, the proportion of California residents who reported insucient rest or sleep during each of the preceding 30 days is 8.0%, while this proportion is 8.8% for Oregon residents. These data are based on simple random samples of 11,545 California and 4,691 Oregon residents. Calculate a 95% con???dence interval for the di???erence between the proportions of Californians and Oregonians who are sleep deprived and interpret it in context of the data.
+
+```{r}
+x1 <- 11545
+x2 <- 4691
+p1 <- 0.08
+p2 <- 0.088
+ci <- .95
+z <- 1.96
+
+
+se <- sqrt(p1 * (1-p1)/x1 + p2 * (1-p2)/x2)
+
+pe <- p2 - p1
+
+round(pe + z * se,4)
+
+round(pe - z * se,4)
+
+
+```
+
+
+6.44 Barking deer. Microhabitat factors associated with forage and bed sites of barking deer in Hainan Island, China were examined from 2001 to 2002. In this region woods make up 4.8% of the land, cultivated grass plot makes up 14.7%, and deciduous forests makes up 39.6%. Of the 426 sites where the deer forage, 4 were categorized as woods, 16 as cultivated grassplot, and 61 as deciduous forests. The table below summarizes these data.62 Woods Cultivated grassplot Deciduous forests Other 
+
+Total 4 16 61 345 426
+
+(a) Write the hypotheses for testing if barking deer prefer to forage in certain habitats over others.
+
+H0: Barking deer don't perfer different habitats over others 
+
+Ha: Barking deer perfer different habitats over others
+
+(b) What type of test can we use to answer this research question? 
+
+Chi-square 
+
+(c) Check if the assumptions and conditions required for this test are satis???ed.
+
+
+(d) Do these data provide convincing evidence that barking deer prefer to forage in certain habitats over others? Conduct an appropriate hypothesis test to answer this research question. 
+```{r}
+deer <- c(4, 16, 61, 345)
+percent <- c(0.048, 0.147, 0.396, 0.409)
+
+chisq.test(x = deer, p = percent)
+
+6.48
+```
+While the p-value is less than 0.05, we can reject the H0 and conclude that barking deer do perfer some habitats over others.
+
+
+
+6.48  Coffee and Depression. Researchers conducted a study investigating the relationship between caffeinated coffee consumption and risk of depression in women. They collected data on 50,739 women free of depression symptoms at the start of the study in the year 1996, and these women were followed through 2006. The researchers used questionnaires to collect data on caffeinated cffee consumption, asked each individual about physician-diagnosed depression, and also asked about the use of antidepressants. The table below shows the distribution of incidences of depression by amount of ca???einated co???ee consumption
+ 
+ 
+ 
+ (a) What type of test is appropriate for evaluating if there is an association between co???ee intake and depression?
+
+Chi squared test 2 way table
+ 
+
+(b) Write the hypotheses for the test you identi???ed in part (a).
+
+
+H0 There is no association between caffeine consumption and risk of depression in women 
+
+Ha There is an association between caffeine consumption and risk of depression in women
+ 
+ (c) Calculate the overall proportion of women who do and do not su???er from depression. 
+ 
+ 
+```{r}
+depress <- 2607
+no_depress <- 48132
+total_no_dep <- no_depress + depress
+
+depress/total_no_dep * 100
+
+
+no_depress/total_no_dep * 100
+
+```
+ 
+ (d) Identify the expected count for the highlighted cell, and calculate the contribution of this cell to the test statistic, i.e. (ObservedExpected)2/Expected. 
+ 
+```{r}
+6617 * 2607 / 50739
+```
+ 
+ (e) The test statistic is 2 = 20 .93. What is the p-value?
+```{r}
+ 
+df <- (2-1) * (5-1)
+chisq <- 9.49
+
+
+less1 <- c(670, 11545)
+cups2.6 <- c(373, 6244)
+cups1 <- c(905, 16329)
+cups2.3 <- c(564, 11726)
+cups4pl <- c(95, 2288)
+
+table <- data.frame(less1, cups2.6, cups1, cups2.3, cups4pl, row.names = c("Yes", "No"))
+table
+
+
+chisq.test(table)
+ 
+```
+P-value is 0.0003267
+
+Calculate the chisq critical value
+```{r}
+qchisq(0.05, df=4, lower.tail = F)
+
+
+library(visualize)
+visualize.chisq(stat=20.932, df = 4, section = "upper")
+```
+
+ (f) What is the conclusion of the hypothesis test?
+ 
+ The p-value is at an all time low, null doenst mean much, meaning we will reject the null hypthesis.
+ 
+ (g) One of the authors of this study was quoted on the NYTimes as saying it was "too early to recommend that women load up on extra coffee" based on just this study.64 Do you agree with this statement? Explain your reasoning.
+
+I agree with the statement. The chi square test only shows that there is a relationship in the study, it does not exactly show what that relationship is. The study participants weren't randomly assigned to treatments groups, and there might be other unknown factors not take into account.
+
+
+
+
+
