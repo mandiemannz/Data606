@@ -1,0 +1,189 @@
+---
+title: "Data 606 Final Project"
+author: "Amanda Arce"
+date: "December 10, 2018"
+output:
+  rmdformats::readthedown:
+    self_contained: true
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+---
+
+
+# Libraries
+
+```{r message=FALSE, warning=FALSE}
+# load data
+library(tidyverse)
+library(readr)
+library(psych)
+library(corrgram)
+library(plotly)
+
+```
+
+
+# Introduction
+
+This data was provided from The CDC. The CDC releases a detailed report on the deaths in the United States under the National Vital Statistics Systems. In this report you will notice the records of death from 2005 through 2015, the report includes the details as to what causes these death and the demographic background of the people who had passed on. The study will focus on answering the following questions:
+
+
+What is the deathrate based off disease, race, and age?
+
+It will tell us that there are 708 total causes- showing year, leading cause of death, ethnicity, and death/rates
+
+
+#Data 
+
+Data was gathered from NYC Open Data. The type of data is Observational. The dependent variable is Death rates.  The death rate is quantitative data. The independent variables are disease, race, and age.
+
+
+Informational regrading this data can be found by visiting the link below:
+
+https://data.cityofnewyork.us/Health/New-York-City-Leading-Causes-of-Death/jb7j-dtam
+
+#Exploratory Data Analysis & Inference
+```{r}
+leadingCauses <- read_csv("New_York_City_Leading_Causes_of_Death.csv")
+head(leadingCauses, 10)
+```
+
+An overview of the data found from leading causes of diseases. 
+
+As show above, the data is in a messy format, so we must apply some techniques to clean and better make sense of the data.
+
+##Data Cleaning
+
+The below code helps make sense of the data.  Some "NA" data was formatted as ".", so we apply a transformation to make "." into NA, so they can easily be removed.  We also convert some variables to numeric, as when imported into R they come in as character variables.  
+
+```{r}
+leadingCauses$Deaths[leadingCauses$Deaths=="."] <- NA
+leadingCauses$`Death Rate`[leadingCauses$`Death Rate`=="."] <- NA
+leadingCauses$`Age Adjusted Death Rate`[leadingCauses$`Age Adjusted Death Rate`=="."] <- NA
+leadingCauses <- na.omit(leadingCauses)
+
+
+leadingCauses$Deaths <- as.numeric(leadingCauses$Deaths)
+leadingCauses$`Death Rate` <- as.numeric(leadingCauses$`Death Rate`)
+leadingCauses$`Age Adjusted Death Rate` <- as.numeric(leadingCauses$`Age Adjusted Death Rate`)
+```
+
+
+##Summary Statistics
+
+The below summary and describe show some summary statistics, such as mean/median/range for variables in the dataset. 
+```{r message=FALSE, warning=FALSE}
+summary(leadingCauses)
+```
+
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+describe(leadingCauses)
+```
+
+The data show that the # of individuals per ethnicity seems evenly distributed - there are about the same amount per group in the data.
+```{r}
+leadingCauses %>%
+  group_by(leadingCauses$`Race Ethnicity`) %>%
+  summarize(n=n())
+```
+
+The data also has an even number of males and females.
+
+```{r}
+leadingCauses %>%
+  group_by(leadingCauses$Sex) %>%
+  summarize(n=n())
+```
+
+
+
+##Visual Analysis
+
+The following interactive bargraph shows the count of deaths by year.
+```{r}
+p1 <- ggplot(data = leadingCauses, aes(leadingCauses$Year, leadingCauses$Deaths)) + 
+  stat_summary(fun.y = sum,
+               geom = "bar", aes(fill = Year))
+
+ggplotly(p1)
+```
+
+The following graph shows the number of deaths broken down by Ethnicity.
+
+```{r}
+p2 <- ggplot(data = leadingCauses, aes(leadingCauses$`Race Ethnicity`, leadingCauses$Deaths)) + 
+  stat_summary(fun.y = sum,
+               geom = "bar", aes(fill = `Race Ethnicity`)) +
+  theme(legend.position="none")
+
+ggplotly(p2)
+```
+
+According to the graph, white non-Hispanic have the most reported deaths; followed by black non-Hispanic.
+
+
+The following graph shows the leading causes by number of deaths.
+
+```{r}
+
+p3 <- ggplot(data = leadingCauses, aes(leadingCauses$`Leading Cause`, leadingCauses$Deaths)) + 
+  stat_summary(fun.y = sum,
+               geom = "bar", aes(fill = `Leading Cause`)) +
+  theme(legend.position="none") +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+ggplotly(p3)
+```
+
+The data seems to show that the leading cause of death is those related to the heart.
+
+```{r}
+nums <- unlist(lapply(leadingCauses, is.numeric)) 
+nums1 <- leadingCauses[ , nums]
+cor(nums1)
+```
+
+##ANOVA Models
+
+In order to test if there's a significant difference between the death rate of different ethnicities, we're going to use an ANOVA test (since there are more than 2 variables we would like to test for.)
+
+$$H_0: \mu_{white} = \mu_{black} = \mu_{asian} = \mu_{hispanic}$$
+
+
+$$H_a: \mu_{white} \neq \mu_{black} \neq \mu_{asian} \neq \mu_{hispanic} $$
+
+
+
+
+```{r}
+model <- lm(leadingCauses$`Death Rate` ~ leadingCauses$`Race Ethnicity`, leadingCauses)
+anova(model)
+```
+
+Since the p-value from our model is less than 0.05, we reject the $H_0$ and accept the $H_a$, that there is significant evidence that there is a difference in death rate between different ethnicity.  
+
+```{r}
+model <- lm(leadingCauses$`Death Rate` ~ leadingCauses$Sex, leadingCauses)
+anova(model)
+```
+
+Since the p-value from our model is higher than 0.05, we fail to reject the $H_0$, that there is not enough significant evidence that there is a difference in death rate between different sexes. 
+
+#Conclusions
+
+After analyzing the data from the leadingcauses dataset, the data shows that white non-Hispanic account for most of the deaths within this dataset.  The data also shows that the leading cause of death is those related to heart issues.  An interesting follow-up study would be to see what factors impact the heart the most - and ways to prevent them.
+
+The data seems to suggest that there is some significant difference between the death rate and ethnicties, whereas there isn't a significant difference between the deathrate and sex.
+
+
+
+
+
+#Reference:
+
+https://data.cityofnewyork.us/Health/New-York-City-Leading-Causes-of-Death/jb7j-dtam
